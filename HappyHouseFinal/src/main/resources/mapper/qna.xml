@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="com.ssafy.happyhouse.model.dao.QnaDao">
+
+	<!-- 글 작성  -->
+	<insert id="writeArticle" parameterType="Qna">
+		insert into qna (userid, subject, content, hit, regtime)
+		values (#{userid}, #{subject}, #{content}, 0, now())
+	</insert>
+	
+	<!-- 글 목록  -->
+	<select id="listArticle" parameterType="map" resultType="Qna">
+		select *
+		from qna
+		order by no desc
+		limit #{start}, #{spp}
+	</select>
+	
+	<!-- 페이징 -->
+	<select id="getTotalCount" parameterType="map" resultType="int">
+		select count(no)
+		from qna
+		<if test="word != null and word != ''">
+			<if test="key == 'subject'">
+				where subject like concat('%', #{word}, '%')
+			</if>
+			<if test="key != 'subject'">
+				where ${key} = #{word}
+			</if>
+		</if>
+	</select>
+	
+	<!-- 상세 검색  -->
+	<select id="getArticle" parameterType="int" resultType="Qna">
+		select no, userid, subject, content, hit, regtime, answer
+		from qna
+		where no = #{no}
+	</select>
+	
+	
+	<!-- 조회수 증가 -->
+	<update id="updateHit" parameterType="int">
+		update qna
+		set hit = hit + 1
+		where no = #{no}
+	</update>
+	
+	
+	<!-- 글 수정 -->
+	<update id="modifyArticle" parameterType="Qna">
+		update qna
+		set subject = #{subject}, content = #{content}
+		where no = #{no}
+	</update>
+
+	<!-- 글 삭제 -->
+	<delete id="deleteArticle" parameterType="int">
+		delete from qna
+		where no = #{no}
+	</delete>
+	
+	
+	<!-- 답변글  작성 -->
+	<update id="writeAnswer" parameterType="Qna">
+		update qna
+		set answer = #{answer}
+		where no = #{no}
+	</update>	
+		
+	<!-- 답변글  수정 -->
+	<update id="modifyAnswer" parameterType="Qna">
+		update qna
+		set answer = #{answer}
+		where no = #{no}
+	</update>			
+
+	<!-- 답변글  삭제 -->
+	<update id="deleteAnswer" parameterType="int">
+		update qna
+		set answer = ""
+		where no = #{no}
+	</update>	
+
+</mapper>
+

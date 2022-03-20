@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="com.ssafy.happyhouse.model.dao.UserDao">
+	<!-- 유저 목록 -->
+	<select id="selectAll" parameterType="map" resultType="User">
+		select * 
+		from userinfo
+		<if test="word != null and word != ''">
+			<if test="key == 'id'">
+				where userId like concat('%', #{word}, '%')
+			</if>
+			<if test="key == 'email'">
+				where userEmail like concat('%', #{word}, '%')
+			</if>
+		</if>
+		order by userId desc
+		limit #{start}, #{spp};
+	</select>
+	
+	<!-- 유저 검색 -->
+	<select id="selectOne" parameterType="String" resultType="User">
+		select *
+		from userinfo
+		where userId = #{userId};
+		
+	</select>
+
+	<insert id="regist" parameterType="User">
+		insert into userinfo
+		values(#{userId},#{userPw},#{userEmail},#{userPhone},#{userName});
+	</insert>
+	
+	<update id="update" parameterType="User">
+		update userinfo
+		set userPw=#{userPw}, userEmail=#{userEmail}, userPhone=#{userPhone}, userName=#{userName}
+		where userId=#{userId};
+	</update>
+	
+	<delete id="remove" parameterType="String">
+		delete
+		from userinfo
+		where userId=#{userId};
+	</delete>
+	
+	
+	
+	
+	<select id="login" parameterType="User" resultType="User">
+		select userId, userName
+		from userinfo
+		where userId = #{userId} and userPw = #{userPw}
+	</select>
+	
+	
+	
+	<select id="searchPassword" parameterType="String" resultType="User">
+		select userPw, userEmail
+		from userinfo
+		where userId = #{userId}
+	</select>
+</mapper>

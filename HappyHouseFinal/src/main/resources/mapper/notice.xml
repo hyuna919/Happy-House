@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="com.ssafy.happyhouse.model.dao.NoticeDao">
+
+	<!-- 글 작성  -->
+	<insert id="writeArticle" parameterType="Notice">
+		insert into notice (userid, subject, content, hit, regtime)
+		values (#{userid}, #{subject}, #{content}, 0, now())
+	</insert>
+	
+	<!-- 글 목록  -->
+	<select id="listArticle" parameterType="map" resultType="Notice">
+		select *
+		from notice
+		order by no desc
+		limit #{start}, #{spp}
+	</select>
+	
+	<!-- 페이징 -->
+	<select id="getTotalCount" parameterType="map" resultType="int">
+		select count(no)
+		from notice
+		<if test="word != null and word != ''">
+			<if test="key == 'subject'">
+				where subject like concat('%', #{word}, '%')
+			</if>
+			<if test="key != 'subject'">
+				where ${key} = #{word}
+			</if>
+		</if>
+	</select>
+	
+	<!-- 상세 검색  -->
+	<select id="getArticle" parameterType="int" resultType="Notice">
+		select no, userid, subject, content, hit, regtime
+		from notice
+		where no = #{no}
+	</select>
+	
+	
+	<!-- 조회수 증가 -->
+	<update id="updateHit" parameterType="int">
+		update notice
+		set hit = hit + 1
+		where no = #{no}
+	</update>
+	
+	
+	<!-- 글 수정 -->
+	<update id="modifyArticle" parameterType="Notice">
+		update notice
+		set subject = #{subject}, content = #{content}
+		where no = #{no}
+	</update>
+
+	<!-- 글 삭제 -->
+	<delete id="deleteArticle" parameterType="int">
+		delete from notice
+		where no = #{no}
+	</delete>
+	
+	
+	
+
+</mapper>
+
